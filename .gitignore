@@ -1,0 +1,32 @@
+# Diretório de cache do Deno
+**/.deno/
+
+# Arquivos de cache e temporários
+*.tmp
+*.log
+
+# Diretório de dependências (se estiver usando `deno vendor`)
+vendor/
+
+# Arquivos de configuração local (como .env)
+.env
+.env.local
+
+# Arquivos de IDE/Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Arquivos de build/compilação (se aplicável)
+dist/
+build/
+*.js
+*.map
+
+# Arquivos específicos do sistema
+.DS_Store
+Thumbs.db
+
+# Diretório de testes (se não quiser versionar relatórios de teste)
+coverage/
