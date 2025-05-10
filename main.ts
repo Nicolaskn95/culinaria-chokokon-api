@@ -1,10 +1,11 @@
 // main.ts
-import { Application } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { connectDB } from "./db/connect.ts";
-import authRouter from "./routes/auth.ts";
+import routes from "./routes/index.ts";
 
 const PORT = 8000;
 const app = new Application();
+const router = new Router();
 
 // Conectar ao MongoDB
 await connectDB().catch((err) => {
@@ -38,9 +39,6 @@ app.use(async (ctx, next) => {
   await next();
 });
 
-app.use(authRouter.routes());
-app.use(authRouter.allowedMethods());
-
 // Error handler
 app.use(async (ctx, next) => {
   try {
@@ -52,8 +50,14 @@ app.use(async (ctx, next) => {
   }
 });
 
+// Implement routes
+routes.forEach((route) => {
+  app.use(route.routes());
+  app.use(route.allowedMethods());
+});
+
 // Test route
-app.use((ctx) => {
+router.get("/", (ctx) => {
   ctx.response.body = "API de Precificação Culinária Online!";
 });
 
