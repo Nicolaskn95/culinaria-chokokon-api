@@ -1,0 +1,72 @@
+type SuccessResponse<T> = [null, T];
+export function success<T>(data: T): SuccessResponse<T> {
+  return [null, data];
+}
+
+export enum ReturnTypes {
+  accepted = "send_accepted",
+  badGateway = "send_badGateway",
+  badRequest = "send_badRequest",
+  conflict = "send_conflict",
+  continue = "send_continue",
+  created = "send_created",
+  expectationFailed = "send_expectationFailed",
+  failedDependency = "send_failedDependency",
+  forbidden = "send_forbidden",
+  gatewayTimeout = "send_gatewayTimeout",
+  gone = "send_gone",
+  httpVersionNotSupported = "send_httpVersionNotSupported",
+  imATeapot = "send_imATeapot",
+  insufficientSpaceOnResource = "send_insufficientSpaceOnResource",
+  insufficientStorage = "send_insufficientStorage",
+  internalServerError = "send_internalServerError",
+  lengthRequired = "send_lengthRequired",
+  locked = "send_locked",
+  methodFailure = "send_methodFailure",
+  methodNotAllowed = "send_methodNotAllowed",
+  movedPermanently = "send_movedPermanently",
+  movedTemporarily = "send_movedTemporarily",
+  multiStatus = "send_multiStatus",
+  multipleChoices = "send_multipleChoices",
+  networkAuthenticationRequired = "send_networkAuthenticationRequired",
+  noContent = "send_noContent",
+  nonAuthoritativeInformation = "send_nonAuthoritativeInformation",
+  notAcceptable = "send_notAcceptable",
+  notFound = "send_notFound",
+  notImplemented = "send_notImplemented",
+  notModified = "send_notModified",
+  ok = "send_ok",
+  partialContent = "send_partialContent",
+  paymentRequired = "send_paymentRequired",
+  permanentRedirect = "send_permanentRedirect",
+  preconditionFailed = "send_preconditionFailed",
+  preconditionRequired = "send_preconditionRequired",
+  processing = "send_processing",
+  proxyAuthenticationRequired = "send_proxyAuthenticationRequired",
+  requestHeaderFieldsTooLarge = "send_requestHeaderFieldsTooLarge",
+  requestTimeout = "send_requestTimeout",
+  requestTooLong = "send_requestTooLong",
+  requestUriTooLong = "send_requestUriTooLong",
+  requestedRangeNotSatisfiable = "send_requestedRangeNotSatisfiable",
+  resetContent = "send_resetContent",
+  seeOther = "send_seeOther",
+  serviceUnavailable = "send_serviceUnavailable",
+  switchingProtocols = "send_switchingProtocols",
+  temporaryRedirect = "send_temporaryRedirect",
+  tooManyRequests = "send_tooManyRequests",
+  unauthorized = "send_unauthorized",
+  unprocessableEntity = "send_unprocessableEntity",
+  unsupportedMediaType = "send_unsupportedMediaType",
+  useProxy = "send_useProxy",
+}
+
+export function err(
+  type: ReturnTypes,
+  message: string,
+  stack: string,
+): [{ type: ReturnTypes; stack: string; message: string }, null] {
+  return [
+    { type, message, stack },
+    null,
+  ];
+}
