@@ -4,29 +4,31 @@ import { Database } from "../Database.ts";
 type DatabaseConfiguration = {
   hostname: string;
   database: string;
-  username: string;
+  username?: string;
+  isLocal?: boolean;
 };
+
 const databaseConfiguration = env<DatabaseConfiguration>({
   [EnvTypes.local]: {
-    hostname: "mongodb://localhost:27017",
+    hostname: "localhost:27017",
     database: "CHOKOKON_LOCAL_DB",
-    username: "",
+    isLocal: true,
   },
 
   [EnvTypes.developmentLike]: {
     hostname: "projeto-culinario.1jwnm3k.mongodb.net",
     database: "CHOKOKON_PRODUCTION_DB",
     username: "nicolasjap",
+    isLocal: false,
   },
 
   [EnvTypes.productionLike]: {
     hostname: "projeto-culinario.1jwnm3k.mongodb.net",
     database: "CHOKOKON_PRODUCTION_DB",
     username: "nicolasjap",
+    isLocal: false,
   },
 }) as DatabaseConfiguration;
-
-console.log(databaseConfiguration);
 
 const database = new Database(databaseConfiguration);
 

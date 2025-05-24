@@ -11,7 +11,7 @@ import {
   UpdateQuery,
 } from "npm:mongoose@7";
 
-import { throwlhos } from "../globals/Throwlhos.ts";
+import { throwlhos } from "../../globals/Throwlhos.ts";
 
 export type Pagination<T> = {
   page: number;
@@ -72,7 +72,7 @@ type AggregatePaginateModel<D> = Model<D> & {
     query?: Aggregate<T[]>,
     options?: PaginateOptions,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback?: (err: unknown, result: AggregatePaginateResult<T>) => void,
+    callback?: (err: unknown, result: AggregatePaginateResult<T>) => void
   ): Promise<AggregatePaginateResult<T>>;
 };
 
@@ -82,10 +82,7 @@ export class BaseRepository<T> {
   model: AggregatePaginateModel<T>;
   modelRefs?: Array<ModelRef>;
   querieModel?: FilterQuery<T>;
-  constructor(
-    model: AggregatePaginateModel<T>,
-    modelRefs?: Array<ModelRef>,
-  ) {
+  constructor(model: AggregatePaginateModel<T>, modelRefs?: Array<ModelRef>) {
     this.model = model;
     this.modelRefs = modelRefs;
   }
@@ -101,7 +98,7 @@ export class BaseRepository<T> {
         {
           givenId: id,
           typeofGivenObjectId: typeof id,
-        },
+        }
       );
     }
     const findById = this.model.findById(id, options);
@@ -122,6 +119,7 @@ export class BaseRepository<T> {
 
   findMany(query: FilterQuery<T>, options?: QueryOptions) {
     const findMany = this.model.find(query, options);
+
     this.modelRefs?.forEach((ref) => findMany.populate(ref.ref, ref.select));
     return findMany;
   }
@@ -129,7 +127,7 @@ export class BaseRepository<T> {
   updateById(
     id: string | Types.ObjectId,
     update: UpdateQuery<T>,
-    options?: QueryOptions,
+    options?: QueryOptions
   ) {
     if (!is.objectId(id)) {
       throw throwlhos.err_internalServerError(
@@ -137,7 +135,7 @@ export class BaseRepository<T> {
         {
           givenId: id,
           typeofGivenObjectId: typeof id,
-        },
+        }
       );
     }
     const findByIdAndUpdate = this.updateOne({ _id: id }, update, options);
@@ -147,7 +145,7 @@ export class BaseRepository<T> {
   updateOne(
     updateQuery: FilterQuery<T>,
     update: UpdateQuery<T>,
-    options?: QueryOptions,
+    options?: QueryOptions
   ) {
     const findAndUpdate = this.model.findOneAndUpdate(
       updateQuery as FilterQuery<T>,
@@ -156,7 +154,7 @@ export class BaseRepository<T> {
         new: true,
         runValidators: true,
         ...options,
-      },
+      }
     );
 
     this.modelRefs?.forEach((ref) =>
@@ -169,7 +167,7 @@ export class BaseRepository<T> {
   updateMany(
     updateQuery: FilterQuery<T>,
     update: UpdateQuery<T>,
-    options?: QueryOptions,
+    options?: QueryOptions
   ) {
     const updateMany = this.model.updateMany(
       updateQuery as FilterQuery<T>,
@@ -178,7 +176,7 @@ export class BaseRepository<T> {
         new: true,
         runValidators: true,
         ...options,
-      },
+      }
     );
 
     return updateMany;
@@ -192,10 +190,7 @@ export class BaseRepository<T> {
     return findByIdAndDelete;
   }
 
-  deleteOne(
-    query: FilterQuery<T>,
-    options?: QueryOptions,
-  ) {
+  deleteOne(query: FilterQuery<T>, options?: QueryOptions) {
     const findOneAndDelete = this.model.findOneAndDelete(query, options);
     this.modelRefs?.forEach((ref) =>
       findOneAndDelete.populate(ref.ref, ref.select)
@@ -206,7 +201,7 @@ export class BaseRepository<T> {
   findByIdAndUpdate(
     id: Types.ObjectId,
     update: UpdateQuery<T>,
-    options?: QueryOptions,
+    options?: QueryOptions
   ) {
     const findByIdAndUpdate = this.model.findByIdAndUpdate(id, update, {
       new: true,
@@ -230,7 +225,7 @@ export class BaseRepository<T> {
 
   paginate(
     aggregate: PipelineStage[],
-    options?: AggregateOptions & { paginate?: PaginateOptions },
+    options?: AggregateOptions & { paginate?: PaginateOptions }
   ): Promise<AggregatePaginateResult<T>> {
     const aggregateOptions = options || {};
     const modelAggregate = this.model.aggregate(aggregate, aggregateOptions);

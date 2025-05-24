@@ -1,66 +1,98 @@
-// main.ts
-import { Application } from "./deps.ts";
-import { responseMiddleware } from "./middleware/response.ts";
-import { createAuthRoutes } from "./modules/Authentication/routes.ts";
-import { createIngredientRoutes } from "./modules/Ingredient/routes.ts";
-import { AuthenticationService } from "./modules/Authentication/service.ts";
-import { IngredientService } from "./modules/Ingredient/service.ts";
-import { AuthenticationRepository } from "./modules/Authentication/repository.ts";
-import { IngredientRepository } from "./modules/Ingredient/repository.ts";
-import { UserService } from "./modules/User/service.ts";
-import { UserRepository } from "./modules/User/repository.ts";
-import { AuthenticationController } from "./modules/Authentication/controller.ts";
-import { IngredientController } from "./modules/Ingredient/controller.ts";
+import { Application } from "https://deno.land/x/oak/mod.ts";
+import { Env } from "./config/Env.ts";
+import { Print } from "./globals/output/Print.ts";
+import { UnauthRouter } from "./routes/UnauthRouter.ts";
+import { ChokokonDB } from "./database/db/connect.ts";
 
+const print = new Print();
+
+print.info("Starting server...");
 const app = new Application();
 
-// Initialize repositories
-const authRepository = new AuthenticationRepository();
-const ingredientRepository = new IngredientRepository();
-const userRepository = new UserRepository();
+// Verify database connection
+try {
+  print.info("Connecting to MongoDB...");
+  ChokokonDB.on("error", (error) => {
+    print.error(`MongoDB connection error: ${error}`);
+    Deno.exit(1);
+  });
 
-// Initialize services
-const userService = new UserService(userRepository);
-const authService = new AuthenticationService(authRepository, userService);
-const ingredientService = new IngredientService(ingredientRepository);
+  ChokokonDB.on("disconnected", () => {
+    print.error("MongoDB disconnected");
+    Deno.exit(1);
+  });
 
-// Initialize controllers
-const authController = new AuthenticationController(authService);
-const ingredientController = new IngredientController(ingredientService);
+  ChokokonDB.on("connected", () => {
+    print.success("MongoDB connected successfully");
+  });
+} catch (error) {
+  print.error(`Failed to connect to MongoDB: ${error}`);
+  Deno.exit(1);
+}
 
-// Initialize routes
-const authRoutes = createAuthRoutes(authController);
-const ingredientRoutes = createIngredientRoutes(ingredientController);
+// Oak has built-in CORS support
+print.info("Setting up CORS...");
+app.use(async (ctx, next) => {
+  ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+  ctx.response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  );
+  ctx.response.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  await next();
+});
 
-// Global middleware
-app.use(responseMiddleware);
+// Oak has built-in security headers
+print.info("Setting up security headers...");
+app.use(async (ctx, next) => {
+  ctx.response.headers.set("X-Content-Type-Options", "nosniff");
+  ctx.response.headers.set("X-Frame-Options", "DENY");
+  ctx.response.headers.set("X-XSS-Protection", "1; mode=block");
+  await next();
+});
 
-// Error handling
+print.info("Setting up static file serving...");
+app.use(async (ctx, next) => {
+  try {
+    await ctx.send({
+      root: `${Deno.cwd()}/public`,
+      index: "index.html",
+    });
+  } catch {
+    await next();
+  }
+});
+
+print.info("Setting up unauth router...");
+// router.use("/unauth", UnauthRouter.routes(), UnauthRouter.allowedMethods());
+
+print.info("Setting up auth router...");
+app.use(UnauthRouter.routes(), UnauthRouter.allowedMethods());
+
+print.info("Setting up API router...");
+// app.use(APIRouter);
+
+print.info("Setting up error handler...");
 app.use(async (ctx, next) => {
   try {
     await next();
   } catch (error: unknown) {
-    const err = error as {
-      status?: number;
-      message?: string;
-      details?: unknown;
-    };
+    console.error(error);
+    const err = error as { status?: number; message?: string };
     ctx.response.status = err.status || 500;
     ctx.response.body = {
-      success: false,
-      message: err.message || "Internal Server Error",
-      details: err.details,
+      error: err.message || "Internal Server Error",
     };
   }
 });
 
-// Routes
-app.use(authRoutes.routes());
-app.use(authRoutes.allowedMethods());
-app.use(ingredientRoutes.routes());
-app.use(ingredientRoutes.allowedMethods());
-
-// Start server
-const port = 8000;
-console.log(`Server running on http://localhost:${port}`);
-await app.listen({ port });
+if (app) {
+  print.info("Starting WEB Server...");
+  await app.listen({ port: Env.serverPort });
+  print.info(`
+    Back-end is running on port ${Env.ip}:${Env.serverPort} (${Env.name})
+    `);
+}

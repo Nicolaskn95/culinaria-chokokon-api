@@ -91,18 +91,26 @@ export class Env {
   static get globalDatabasePassword() {
     return (
       Deno.env.get("GLOBAL_DATABASE_PASSWORD") ??
-        "seebqCpqRzseeHJlm5TfYieHKYqjrrdaZ6DvGVvjrJ6fVQVVuBaLUhEmilydfGOfXn9HwrKJyAJzTHtn3oaS2DZDZPlay"
+      "seebqCpqRzseeHJlm5TfYieHKYqjrrdaZ6DvGVvjrJ6fVQVVuBaLUhEmilydfGOfXn9HwrKJyAJzTHtn3oaS2DZDZPlay"
     );
   }
 
   static get globalDatabaseCluster() {
     return (
       Deno.env.get("GLOBAL_DATABASE_CLUSTER") ??
-        "projeto-culinario.1jwnm3k.mongodb.net"
+      "projeto-culinario.1jwnm3k.mongodb.net"
     );
   }
 
   static getDatabasePasswordByUsername(databaseUsername: string): string {
+    // If running in local environment, no database username/password is needed
+    if (EnvTypes.local === "local") {
+      console.log(
+        "Running in local environment, no database username/password is needed"
+      );
+      return "";
+    }
+
     if (!databaseUsername) throw Error("Please provide a database username!");
 
     const password = Deno.env.get(`DATABASE_PASSWORD_FOR_${databaseUsername}`);
@@ -114,7 +122,7 @@ export class Env {
   static get jwtSecret() {
     return (
       Deno.env.get("JWT_SECRET") ??
-        "SDNuuJ3zhxLoZiYVXiBEq+X6H2SgIAnXE+ZIB7Fk5dk="
+      "SDNuuJ3zhxLoZiYVXiBEq+X6H2SgIAnXE+ZIB7Fk5dk="
     );
   }
 

@@ -1,6 +1,5 @@
 import requestCheck from "npm:request-check";
 import npmTthrowlhos, { IThrowlhos } from "npm:throwlhos";
-import { i18next } from "../globals/I18n.ts";
 const throwlhos = npmTthrowlhos.default;
 
 export type Validator = (...args: Array<ICheckObj>) => void;
@@ -30,25 +29,29 @@ export class BaseRules {
     try {
       const arrayOfInvalid = this.rc.check(...args);
       if (arrayOfInvalid?.length) {
-        const joinedFieldNames = arrayOfInvalid.map((e: IInvalidField) =>
-          e.field
-        ).join(", ");
+        const joinedFieldNames = arrayOfInvalid
+          .map((e: IInvalidField) => e.field)
+          .join(", ");
         throw throwlhos.err_badRequest(
-          i18next.t("base.rules.message", {
-            fieldName: joinedFieldNames,
-            count: arrayOfInvalid.length,
-          }),
-          arrayOfInvalid,
+          `Os seguintes campos são obrigatórios: ${joinedFieldNames}`,
+          arrayOfInvalid
         );
       }
     } catch (err) {
       console.warn(err);
-      throw {
-        code: 422,
-        message: err.message ?? err,
-        status: err.status,
-        errors: err.errors,
-      } as IThrowlhos;
+      if (err && typeof err === "object") {
+        throw {
+          code: 422,
+          message: (err as { message?: string })?.message ?? String(err),
+          status: (err as { status?: unknown })?.status,
+          errors: (err as { errors?: unknown })?.errors,
+        } as IThrowlhos;
+      } else {
+        throw {
+          code: 422,
+          message: String(err),
+        } as IThrowlhos;
+      }
     }
   };
 }

@@ -1,6 +1,6 @@
 import is from "jsr:@zarco/isness";
 import { BaseSchema } from "../interfaces/base/BaseSchema.ts";
-import mongoose from "mongoose";
+import mongoose from "npm:mongoose@7";
 import { Customer } from "../models/Customer.ts";
 
 class CustomerSchemaClass extends BaseSchema {
@@ -13,13 +13,6 @@ class CustomerSchemaClass extends BaseSchema {
         maxlenght: 10,
         validate: {
           validator: is.string,
-        },
-      },
-      email: {
-        type: String,
-        required: true,
-        validate: {
-          validator: is.email,
         },
       },
       reference: {
@@ -37,11 +30,51 @@ class CustomerSchemaClass extends BaseSchema {
         },
       },
       address: {
-        type: String,
-        required: false,
-        validate: {
-          validator: is.string,
+        type: {
+          street: {
+            type: String,
+            required: true,
+            validate: {
+              validator: is.string,
+            },
+          },
+          number: {
+            type: String,
+            required: true,
+            validate: {
+              validator: is.string,
+            },
+          },
+          complement: {
+            type: String,
+            required: false,
+            validate: {
+              validator: is.string,
+            },
+          },
+          city: {
+            type: String,
+            required: true,
+            validate: {
+              validator: is.string,
+            },
+          },
+          state: {
+            type: String,
+            required: true,
+            validate: {
+              validator: is.string,
+            },
+          },
+          cep: {
+            type: String,
+            required: true,
+            validate: {
+              validator: is.string,
+            },
+          },
         },
+        required: false,
       },
       userId: {
         type: mongoose.Schema.Types.ObjectId,

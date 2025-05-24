@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "npm:mongoose@7";
 import { BaseRepository } from "../interfaces/base/BaseRepository.ts";
 import { ICustomer } from "../interfaces/customer/ICustomer.ts";
 import { ChokokonDB } from "../database/db/connect.ts";
