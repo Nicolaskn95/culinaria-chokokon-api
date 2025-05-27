@@ -1,5 +1,5 @@
 import { ICustomer, IAddress } from "../interfaces/customer/ICustomer.ts";
-import mongoose from "npm:mongoose";
+import mongoose from "npm:mongoose@7";
 
 export class Customer implements ICustomer {
   _id?: mongoose.Types.ObjectId;

@@ -1,5 +1,5 @@
 import { IBaseInterface } from "../base/IBaseInterface.ts";
-import mongoose from "npm:mongoose";
+import mongoose from "npm:mongoose@^7.0.0";
 
 export interface IAddress {
   street: string;

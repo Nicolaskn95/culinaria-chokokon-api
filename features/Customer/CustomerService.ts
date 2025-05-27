@@ -9,25 +9,25 @@ class CustomerService {
     this.customerRepository = new CustomerRepository();
   }
 
-  createCustomer(customer: Customer) {
-    return this.customerRepository.create(customer);
+  async createCustomer(customer: Customer) {
+    return await this.customerRepository.create(customer);
   }
 
-  getCustomers() {
-    const customers = this.customerRepository.findMany({});
+  async getCustomers() {
+    const customers = await this.customerRepository.findMany({});
     return customers;
   }
 
-  getCustomerById(id: string) {
-    return this.customerRepository.findById(id);
+  async getCustomerById(id: string) {
+    return await this.customerRepository.findById(id);
   }
 
-  updateCustomer(id: string, customerData: Partial<ICustomer>) {
-    return this.customerRepository.findByIdAndUpdate(id, customerData);
+  async updateCustomer(id: string, customerData: Partial<ICustomer>) {
+    return await this.customerRepository.findByIdAndUpdate(id, customerData);
   }
 
-  deleteCustomer(id: string) {
-    return this.customerRepository.deleteOne({ _id: id });
+  async deleteCustomer(id: string) {
+    return await this.customerRepository.deleteById(id).exec();
   }
 }
 
