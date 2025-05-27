@@ -13,8 +13,8 @@ class CustomerService {
     return this.customerRepository.create(customer);
   }
 
-  async getCustomers() {
-    const customers = await this.customerRepository.findMany({});
+  getCustomers() {
+    const customers = this.customerRepository.findMany({});
     return customers;
   }
 
@@ -23,7 +23,7 @@ class CustomerService {
   }
 
   updateCustomer(id: string, customerData: Partial<ICustomer>) {
-    return this.customerRepository.updateOne({ _id: id }, customerData);
+    return this.customerRepository.findByIdAndUpdate(id, customerData);
   }
 
   deleteCustomer(id: string) {

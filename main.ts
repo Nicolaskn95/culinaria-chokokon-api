@@ -30,6 +30,37 @@ try {
   Deno.exit(1);
 }
 
+// Oak has built-in security headers
+print.info("Setting up security headers...");
+app.use(async (ctx, next) => {
+  ctx.response.headers.set("X-Content-Type-Options", "nosniff");
+  ctx.response.headers.set("X-Frame-Options", "DENY");
+  ctx.response.headers.set("X-XSS-Protection", "1; mode=block");
+  await next();
+});
+
+// print.info("Setting up static file serving...");
+// app.use(async (ctx, next) => {
+//   try {
+//     await ctx.send({
+//       root: `${Deno.cwd()}/public`,
+//       index: "index.html",
+//     });
+//   } catch {
+//     await next();
+//   }
+// });
+
+print.info("Setting up unauth router...");
+// router.use("/unauth", UnauthRouter.routes(), UnauthRouter.allowedMethods());
+
+print.info("Setting up auth router...");
+app.use(UnauthRouter.routes());
+app.use(UnauthRouter.allowedMethods());
+
+print.info("Setting up API router...");
+// app.use(APIRouter);
+
 // Oak has built-in CORS support
 print.info("Setting up CORS...");
 app.use(async (ctx, next) => {
@@ -42,38 +73,9 @@ app.use(async (ctx, next) => {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization"
   );
+  ctx.response.type = "application/json";
   await next();
 });
-
-// Oak has built-in security headers
-print.info("Setting up security headers...");
-app.use(async (ctx, next) => {
-  ctx.response.headers.set("X-Content-Type-Options", "nosniff");
-  ctx.response.headers.set("X-Frame-Options", "DENY");
-  ctx.response.headers.set("X-XSS-Protection", "1; mode=block");
-  await next();
-});
-
-print.info("Setting up static file serving...");
-app.use(async (ctx, next) => {
-  try {
-    await ctx.send({
-      root: `${Deno.cwd()}/public`,
-      index: "index.html",
-    });
-  } catch {
-    await next();
-  }
-});
-
-print.info("Setting up unauth router...");
-// router.use("/unauth", UnauthRouter.routes(), UnauthRouter.allowedMethods());
-
-print.info("Setting up auth router...");
-app.use(UnauthRouter.routes(), UnauthRouter.allowedMethods());
-
-print.info("Setting up API router...");
-// app.use(APIRouter);
 
 print.info("Setting up error handler...");
 app.use(async (ctx, next) => {

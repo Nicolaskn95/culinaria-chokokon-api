@@ -16,12 +16,12 @@ CustomerRouter.get("/customers/:id", (context) => {
   customerController.getById(context.request, context.response);
 });
 
-CustomerRouter.put("/customers/:id", (context) => {
-  customerController.update(context.request, context.response);
+CustomerRouter.put("/customers/:id", async (context) => {
+  await customerController.update(context.request, context.response);
 });
 
-CustomerRouter.delete("/customers/:id", (context) => {
-  customerController.delete(context.request, context.response);
+CustomerRouter.delete("/customers/:id", async (context) => {
+  await customerController.delete(context.request, context.response);
 });
 
 export { CustomerRouter };

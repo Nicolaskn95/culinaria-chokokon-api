@@ -129,6 +129,8 @@ export class BaseRepository<T> {
     update: UpdateQuery<T>,
     options?: QueryOptions
   ) {
+    console.log(id);
+    console.log(update);
     if (!is.objectId(id)) {
       throw throwlhos.err_internalServerError(
         "updateById requires a valid ObjectId",
@@ -147,6 +149,8 @@ export class BaseRepository<T> {
     update: UpdateQuery<T>,
     options?: QueryOptions
   ) {
+    console.log(updateQuery);
+    console.log(update);
     const findAndUpdate = this.model.findOneAndUpdate(
       updateQuery as FilterQuery<T>,
       update,
@@ -199,7 +203,8 @@ export class BaseRepository<T> {
   }
 
   findByIdAndUpdate(
-    id: Types.ObjectId,
+    // deno-lint-ignore no-explicit-any
+    id: any,
     update: UpdateQuery<T>,
     options?: QueryOptions
   ) {
