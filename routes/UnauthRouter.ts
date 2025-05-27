@@ -1,5 +1,6 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import { CustomerRouter } from "../features/Customer/CustomerRouter.ts";
+import { ProductsRouter } from "../features/Products/ProductsRouter.ts";
 
 const UnauthRouter = new Router();
 
@@ -11,5 +12,5 @@ const UnauthRouter = new Router();
 // });
 
 UnauthRouter.use(CustomerRouter.routes());
-
+UnauthRouter.use(ProductsRouter.routes());
 export { UnauthRouter };
